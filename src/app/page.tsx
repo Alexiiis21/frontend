@@ -36,7 +36,6 @@ export default function Home() {
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             Manten tus tareas bajo control y {""}
             <span className="text-primary">aumenta tu productividad</span>.
-            Organiza tu vida.
           </h1>
           <p className="mt-6 text-lg max-w-prose text-muted-foreground">
             Nuestra app te ayuda a mantener tus tareas bajo control, desde
@@ -45,7 +44,7 @@ export default function Home() {
           </p>
           <div className='flex flex-col gap-4 mt-6'>
             <Link
-              href='/mis-paquetes'
+              href='/dashboard'
               className={buttonVariants({
                 size: 'default',
                 className: 'w-full px-6 h-full py-3 my-8',
