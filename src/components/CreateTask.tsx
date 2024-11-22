@@ -5,8 +5,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,6 @@ import { Plus } from "lucide-react";
 import { SelectDate } from "./SelectDate";
 import { createTask } from '@/lib/utils';
 import { Task, Priority } from '@/files/file';
-import { toast } from 'react-toastify';
 
 interface CreateTaskProps {
   onTaskCreated: (task: Task) => void;
@@ -76,7 +75,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onTaskCreated }) => {
       setTaskDate(undefined);
       setSelectedPriority(null);
       setIsDialogOpen(false);
-      toast.success("Tarea creada exitosamente.");
     }
   };
 
@@ -151,7 +149,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onTaskCreated }) => {
                   </div>
                 </PopoverContent>
               </Popover>
-              <Label htmlFor="date" className="text-right flex mr-10" />
+              <Label htmlFor="date" className="text-right flex" />
               <div>
                 <SelectDate onDateSelect={handleTaskDateChange}/>
               </div>
