@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 
 const fetchTasks = async (): Promise<Task[]> => {
   try {
-    const response = await axios.get('http://localhost:3000/task');
+    const response = await axios.get('nestjs-prisma-test-production.up.railway.app/task');
     return response.data;
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -21,7 +21,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 
 export const deleteTask = async (id: number): Promise<void> => {
   try {
-    await axios.delete(`http://localhost:3000/task/${id}`);
+    await axios.delete(`nestjs-prisma-test-production.up.railway.app/task/${id}`);
   } catch (error) {
     console.error('Error deleting task:', error);
     throw error;
@@ -30,7 +30,7 @@ export const deleteTask = async (id: number): Promise<void> => {
 
 export const updateTask = async (id: number, data: Partial<Omit<Task, 'id'>>): Promise<Task> => {
   try {
-    const response = await axios.put(`http://localhost:3000/task/${id}`, data);
+    const response = await axios.put(`nestjs-prisma-test-production.up.railway.app/task/${id}`, data);
     return response.data;
   } catch (error) {
     console.error('Error updating task:', error);
@@ -42,7 +42,7 @@ export default fetchTasks;
 
 export const createTask = async (task: Omit<Task, 'id'>): Promise<Task> => {
   try {
-    const response = await axios.post('http://localhost:3000/task', task);
+    const response = await axios.post('nestjs-prisma-test-production.up.railway.app/task', task);
     return response.data;
   } catch (error) {
     console.error('Error creating task:', error);
@@ -52,7 +52,7 @@ export const createTask = async (task: Omit<Task, 'id'>): Promise<Task> => {
 
 export const markTaskAsComplete = async (id: number): Promise<Task> => {
   try {
-    const response = await axios.put(`http://localhost:3000/task/${id}/complete`);
+    const response = await axios.put(`nestjs-prisma-test-production.up.railway.app/task/${id}/complete`);
     return response.data;
   } catch (error) {
     console.error('Error marking task as complete:', error);
@@ -62,7 +62,7 @@ export const markTaskAsComplete = async (id: number): Promise<Task> => {
 
 export const markTaskAsIncomplete = async (id: number): Promise<Task> => {
   try {
-    const response = await axios.put(`http://localhost:3000/task/${id}/incomplete`);
+    const response = await axios.put(`nestjs-prisma-test-production.up.railway.app/task/${id}/incomplete`);
     return response.data;
   } catch (error) {
     console.error('Error marking task as incomplete:', error);

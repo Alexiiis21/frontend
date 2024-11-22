@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteTask(id);
-      setTasks(tasks.filter(task => task.id !== id)); // Actualiza el estado local
+      setTasks(tasks.filter(task => task.id !== id));
     } catch (error) {
       console.error('Error deleting task:', error);
     }
