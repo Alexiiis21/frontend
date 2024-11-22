@@ -142,8 +142,8 @@ const EditTask: React.FC<EditTaskProps> = ({ task, onTaskUpdated, onClose }) => 
             </div>
           </div>
           <div className="flex justify-center mt-4 mb-0">
-            <Button onClick={handleUpdateTask} className="bg-blue-500 text-white">
-              Actualizar
+            <Button onClick={handleUpdateTask} className="bg-primary text-white">
+              Editar
             </Button>
           </div>
         </div>

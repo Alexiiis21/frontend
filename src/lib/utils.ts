@@ -49,3 +49,23 @@ export const createTask = async (task: Omit<Task, 'id'>): Promise<Task> => {
     throw error;
   }
 };
+
+export const markTaskAsComplete = async (id: number): Promise<Task> => {
+  try {
+    const response = await axios.put(`http://localhost:3000/task/${id}/complete`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marking task as complete:', error);
+    throw error;
+  }
+};
+
+export const markTaskAsIncomplete = async (id: number): Promise<Task> => {
+  try {
+    const response = await axios.put(`http://localhost:3000/task/${id}/incomplete`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marking task as incomplete:', error);
+    throw error;
+  }
+};

@@ -7,6 +7,6 @@ export type Task = {
     completed: boolean;
   };
 
-  export type Priority = "high" | "low" | "default";
+  export type Priority = "high" | "low" | "default" ;
   
   

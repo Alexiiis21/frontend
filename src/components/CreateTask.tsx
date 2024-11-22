@@ -131,7 +131,7 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
                         className: "hover:bg-zinc-200 flex items-center  w-40",
                       })}
                     >
-                      <span>Prioridad alta</span>
+                      <span>Alta</span>
                       <div className="rounded-full bg-red-600 w-[13px] h-[13px]" />
                     </Button>
                     <Button
@@ -141,7 +141,7 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
                         className: "hover:bg-zinc-200 flex items-center w-40",
                       })}
                     >
-                      <span>Prioridad baja</span>
+                      <span>Baja</span>
                       <div className="rounded-full bg-primary w-[13px] h-[13px]" />
                     </Button>
                   </div>
@@ -153,7 +153,7 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
               </div>
             </div>
             <div className="flex justify-center mt-4 mb-0">
-              <Button onClick={handleCreateTask} className="bg-blue-500 text-white">
+              <Button onClick={handleCreateTask} className="bg-primary text-white">
                 Crear 
               </Button>
             </div>

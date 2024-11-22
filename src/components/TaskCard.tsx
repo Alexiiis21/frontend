@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import { Pencil, Trash } from 'lucide-react';
-import { Checkbox } from './ui/checkbox';
+import { Check, Pencil, Trash } from 'lucide-react';
 import { Task } from '@/files/file';
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -11,17 +10,22 @@ interface TaskCardProps {
   task: Task;
   onDelete: (id: number) => void;
   onUpdate: (task: Task) => void;
+  onToggleComplete: (id: number) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete, onUpdate }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete, onUpdate, onToggleComplete }) => {
   const [isCompleted, setIsCompleted] = useState<boolean>(task.completed);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
 
-  const handleCheckboxChange = () => {
+  const handleCheckboxChange = async () => {
     setIsCompleted(!isCompleted);
+    onToggleComplete(task.id);
   };
 
   const getPriorityColor = (priority: string) => {
+    if (isCompleted) {
+      return 'bg-gradient-to-r from-gray-500 to-gray-700';
+    }
     switch (priority) {
       case 'high':
         return 'bg-gradient-to-r from-red-300 to-red-700';
@@ -64,15 +68,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete, onUpdate }) => {
       </div>
 
       <div className='px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500'>
-        <div className='flex items-center gap-2'>
-          <Checkbox id="completed" checked={isCompleted} onChange={handleCheckboxChange} />
-          <label
-            htmlFor="completed"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Completar
-          </label>
-        </div>
+        <Button
+          onClick={() => handleCheckboxChange()}
+          size='sm'
+          className='w-full'
+          variant='default'>
+            {isCompleted ? null : <Check className='h-4 w-4 font-bold' />}
+          {isCompleted ? 'Anular' : ' Completar'}
+        </Button>
 
         <div className='flex items-center gap-2'>
           <Button variant="outline" onClick={handleEditClick}>

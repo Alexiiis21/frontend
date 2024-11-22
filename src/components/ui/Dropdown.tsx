@@ -10,19 +10,27 @@ interface DropdownProps {
   tasks: Task[];
   onDelete: (id: number) => void;
   onUpdate: (task: Task) => void;
+  onToggleComplete: (id: number) => void;
+  showCompleted?: boolean; // Nueva propiedad
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ triggerText, priority, tasks, onDelete, onUpdate }) => {
+const Dropdown: React.FC<DropdownProps> = ({ triggerText, priority, tasks, onDelete, onUpdate, onToggleComplete, showCompleted }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    if (priority === 'all') {
-      setFilteredTasks(tasks);
-    } else {
-      setFilteredTasks(tasks.filter(task => task.priority === priority));
+    let filtered = tasks;
+
+    if (priority !== 'all') {
+      filtered = filtered.filter(task => task.priority === priority);
     }
-  }, [priority, tasks]);
+
+    if (showCompleted !== undefined) {
+      filtered = filtered.filter(task => task.completed === showCompleted);
+    }
+
+    setFilteredTasks(filtered);
+  }, [priority, tasks, showCompleted]);
 
   const sortedTasks = filteredTasks.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -51,7 +59,7 @@ const Dropdown: React.FC<DropdownProps> = ({ triggerText, priority, tasks, onDel
           {filteredTasks && filteredTasks.length !== 0 ? (
             <ul className='grid grid-cols-1 w-full gap-6 md:grid-cols-2 lg:grid-cols-2'>
               {sortedTasks.map(task => (
-                <TaskCard key={task.id} task={task} onDelete={onDelete} onUpdate={onUpdate}/>
+                <TaskCard key={task.id} task={task} onDelete={onDelete} onUpdate={onUpdate} onToggleComplete={onToggleComplete} />
               ))}
             </ul>
           ) : (
@@ -68,3 +76,4 @@ const Dropdown: React.FC<DropdownProps> = ({ triggerText, priority, tasks, onDel
 };
 
 export default Dropdown;
+
