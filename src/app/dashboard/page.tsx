@@ -1,11 +1,39 @@
-"use client";
-import Wrapper from "@/components/Wrapper";
-import CreateTask from "@/components/CreateTask";
-import Dropdown from "@/components/ui/Dropdown";
+'use client'
+import React, { useState, useEffect } from 'react';
+import Wrapper from '@/components/Wrapper';
+import CreateTask from '@/components/CreateTask';
+import Dropdown from '@/components/ui/Dropdown';
+import { Task } from '@/files/file';
+import fetchTasks, { deleteTask } from '@/lib/utils';
 
+const Dashboard: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-const Dashboard = () => {
+  useEffect(() => {
+    const getTasks = async () => {
+      const fetchedTasks = await fetchTasks();
+      setTasks(fetchedTasks);
+    };
 
+    getTasks();
+  }, []);
+
+  const handleTaskCreated = (newTask: Task) => {
+    setTasks([...tasks, newTask]);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteTask(id);
+      setTasks(tasks.filter(task => task.id !== id)); // Actualiza el estado local
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const handleUpdate = (updatedTask: Task) => {
+    setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+  };
 
   return (
     <Wrapper>
@@ -15,10 +43,14 @@ const Dashboard = () => {
             Mis Tareas
           </h1>
           <div>
-         <CreateTask />
+            <CreateTask onTaskCreated={handleTaskCreated} />
           </div>
         </div>
-        <Dropdown triggerText="Prioridad Alta"/>
+        <div className="flex flex-col gap-4">
+          <Dropdown tasks={tasks} triggerText="Todas las tareas" priority="all" onDelete={handleDelete} onUpdate={handleUpdate}/>
+          <Dropdown tasks={tasks} triggerText="Prioridad Alta" priority="high" onDelete={handleDelete} onUpdate={handleUpdate}/>
+          <Dropdown tasks={tasks} triggerText="Prioridad Baja" priority="low" onDelete={handleDelete} onUpdate={handleUpdate}/>
+        </div>
       </main>
     </Wrapper>
   );

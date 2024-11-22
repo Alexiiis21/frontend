@@ -5,8 +5,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,14 +15,72 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React from "react";
+import React, { useState } from "react";
+import { Plus } from "lucide-react";
+import { SelectDate } from "./SelectDate";
+import { createTask } from '@/lib/utils';
+import { Task, Priority } from '@/files/file';
 
-const CreateTask = () => {
+interface EditTaskProps {
+  onTaskCreated: (task: Task) => void;
+}
+
+const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+  const [taskPriority, setTaskPriority] = useState<Priority>("default");
+  const [taskDate, setTaskDate] = useState<Date | undefined>();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedPriority, setSelectedPriority] = useState<Priority | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskName(e.target.value);
+  };
+
+  const handleTaskDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTaskDescription(e.target.value);
+  };
+
+  const handleTaskPriorityChange = (priority: Priority) => {
+    setTaskPriority(priority);
+    setSelectedPriority(priority);
+    setIsPopoverOpen(false); // Cierra el Popover al seleccionar una prioridad
+  };
+
+  const handleTaskDateChange = (date: Date | undefined) => {
+    setTaskDate(date);
+  };
+
+  const handleCreateTask = async () => {
+    if (!taskName || !taskDate) return;
+
+    const newTask = {
+      title: taskName,
+      description: taskDescription,
+      date: taskDate!,
+      priority: taskPriority,
+      completed: false,
+    };
+
+    const createdTask = await createTask(newTask);
+    if (createdTask) {
+      onTaskCreated(createdTask);
+      setTaskName('');
+      setTaskDescription('');
+      setTaskPriority('low');
+      setTaskDate(undefined);
+      setSelectedPriority(null);
+      setIsDialogOpen(false);
+
+    }
+  };
+
   return (
     <div>
-      <Dialog>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="p-6 text-md">Añadir tarea +</Button>
+          <Button className="p-6 text-md">Añadir tarea <Plus className='h-4 w-4'/></Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] ">
           <DialogHeader>
@@ -33,64 +91,71 @@ const CreateTask = () => {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Nombre de la tarea" className="text-right">
+              <Label htmlFor="name" className="text-right">
                 Nombre
               </Label>
               <Input
                 id="name"
-                defaultValue="Nombre de la tarea"
+                value={taskName}
                 className="col-span-3"
+                onChange={handleTaskNameChange}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Descripción de la tarea" className="text-right">
+              <Label htmlFor="description" className="text-right">
                 Descripción
               </Label>
               <Textarea
-                placeholder="Descripción de la tarea"
-                className="w-full col-span-3"
+                id="description"
+                value={taskDescription}
+                className="col-span-3"
+                onChange={handleTaskDescriptionChange}
               />
             </div>
             <div className="flex justify-between items-center gap-4">
-              <Label htmlFor="Prioridad de la tarea" className="text-right ml-10">
-                <Popover>
-                  <PopoverTrigger>Prioridad</PopoverTrigger>
-                  <PopoverContent>
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        className={buttonVariants({
-                          variant: "secondary",
-                          className: "hover:bg-zinc-200 flex items-center  w-40",
-                        })}
-                      >
-                        <span>Prioridad alta</span>
-                        <div className="rounded-full bg-red-600 w-[13px] h-[13px]" />
-                      </Button>
-                      <Button
-                        className={buttonVariants({
-                          variant: "secondary",
-                          className: "hover:bg-zinc-200 flex items-center  w-40",
-                        })}
-                      >
-                        <span>Prioridad media</span>
-                        <div className="rounded-full bg-orange-500 w-[13px] h-[13px]" />
-                      </Button>
-                      <Button
-                        className={buttonVariants({
-                          variant: "secondary",
-                          className: "hover:bg-zinc-200 flex items-center w-40",
-                        })}
-                      >
-                        <span>Prioridad baja</span>
-                        <div className="rounded-full bg-primary w-[13px] h-[13px]" />
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </Label>
-              <Label htmlFor="Fecha límite" className="text-right flex justify-end mr-10">
-                Fecha límite
-              </Label>
+              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex items-center ml-1">
+                  Prioridad
+                    {selectedPriority === 'high' && <div className="rounded-full bg-red-600 w-[13px] h-[13px] mr-2" />}
+                    {selectedPriority === 'low' && <div className="rounded-full bg-primary w-[13px] h-[13px] mr-2" />}
+                    {selectedPriority === null && <div className="rounded-full bg-gray-300 w-[13px] h-[13px] mr-2" />}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={() => handleTaskPriorityChange("high")}
+                      className={buttonVariants({
+                        variant: "secondary",
+                        className: "hover:bg-zinc-200 flex items-center  w-40",
+                      })}
+                    >
+                      <span>Prioridad alta</span>
+                      <div className="rounded-full bg-red-600 w-[13px] h-[13px]" />
+                    </Button>
+                    <Button
+                      onClick={() => handleTaskPriorityChange("low")}
+                      className={buttonVariants({
+                        variant: "secondary",
+                        className: "hover:bg-zinc-200 flex items-center w-40",
+                      })}
+                    >
+                      <span>Prioridad baja</span>
+                      <div className="rounded-full bg-primary w-[13px] h-[13px]" />
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Label htmlFor="date" className="text-right flex" />
+              <div>
+                <SelectDate onDateSelect={handleTaskDateChange}/>
+              </div>
+            </div>
+            <div className="flex justify-center mt-4 mb-0">
+              <Button onClick={handleCreateTask} className="bg-blue-500 text-white">
+                Crear 
+              </Button>
             </div>
           </div>
         </DialogContent>

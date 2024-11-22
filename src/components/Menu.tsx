@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import fetchTasks, { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,30 +13,42 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Task } from "@/files/file";
+
 
 export function Menu() {
+  const [recentTasks, setRecentTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const getRecentTasks = async () => {
+      const tasks = await fetchTasks();
+      const sortedTasks = tasks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setRecentTasks(sortedTasks.slice(0, 3));
+    };
+
+    getRecentTasks();
+  }, []);
+
   return (
-    <NavigationMenu>
+    <NavigationMenu className="">
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger className="text-base">Mis tareas</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[100px] lg:w-[200px] lg:grid-cols-[1fr]">
               <li className="row-span-3 flex items-center">
-                <Link href="#" className="flex items-center text-primary font-semibold">
+                <Link href="/dashboard" className="flex items-center text-primary font-semibold">
                   Ver todas
                   <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </li>
-              <ListItem href="/docs" title="Tarea 1">
-                Tarea 1 desc
-              </ListItem>
-              <ListItem href="/docs/installation" title="Tarea 12">
-                Tarea 2 desc
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Tarea 2">
-                Tarea 3 desc
-              </ListItem>
+              {recentTasks.map(task => (
+                <ListItem key={task.id} title={task.title}>
+                  <span className="font-semibold">
+                  {task.description}
+                  </span>
+                </ListItem>
+              ))}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
