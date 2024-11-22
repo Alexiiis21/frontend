@@ -5,8 +5,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,14 +20,15 @@ import { Plus } from "lucide-react";
 import { SelectDate } from "./SelectDate";
 import { createTask } from '@/lib/utils';
 import { Task, Priority } from '@/files/file';
+import { toast } from 'react-toastify';
 
-interface EditTaskProps {
+interface CreateTaskProps {
   onTaskCreated: (task: Task) => void;
 }
 
-const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
-  const [taskName, setTaskName] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
+const CreateTask: React.FC<CreateTaskProps> = ({ onTaskCreated }) => {
+  const [taskName, setTaskName] = useState("Sin título");
+  const [taskDescription, setTaskDescription] = useState("Sin descripción");
   const [taskPriority, setTaskPriority] = useState<Priority>("default");
   const [taskDate, setTaskDate] = useState<Date | undefined>();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -53,26 +54,29 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
   };
 
   const handleCreateTask = async () => {
-    if (!taskName || !taskDate) return;
+    const defaultName = "Sin título";
+    const defaultDescription = "Sin descripción";
+    const defaultPriority: Priority = "low";
+    const defaultDate = new Date();
 
     const newTask = {
-      title: taskName,
-      description: taskDescription,
-      date: taskDate!,
-      priority: taskPriority,
+      title: taskName || defaultName,
+      description: taskDescription || defaultDescription,
+      date: taskDate || defaultDate,
+      priority: taskPriority || defaultPriority,
       completed: false,
     };
 
     const createdTask = await createTask(newTask);
     if (createdTask) {
       onTaskCreated(createdTask);
-      setTaskName('');
-      setTaskDescription('');
-      setTaskPriority('low');
+      setTaskName(defaultName);
+      setTaskDescription(defaultDescription);
+      setTaskPriority(defaultPriority);
       setTaskDate(undefined);
       setSelectedPriority(null);
       setIsDialogOpen(false);
-
+      toast.success("Tarea creada exitosamente.");
     }
   };
 
@@ -116,7 +120,7 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="flex items-center ml-1">
-                  Prioridad
+                    Prioridad
                     {selectedPriority === 'high' && <div className="rounded-full bg-red-600 w-[13px] h-[13px] mr-2" />}
                     {selectedPriority === 'low' && <div className="rounded-full bg-primary w-[13px] h-[13px] mr-2" />}
                     {selectedPriority === null && <div className="rounded-full bg-gray-300 w-[13px] h-[13px] mr-2" />}
@@ -131,7 +135,7 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
                         className: "hover:bg-zinc-200 flex items-center  w-40",
                       })}
                     >
-                      <span>Alta</span>
+                      <span>Prioridad alta</span>
                       <div className="rounded-full bg-red-600 w-[13px] h-[13px]" />
                     </Button>
                     <Button
@@ -141,19 +145,19 @@ const CreateTask: React.FC<EditTaskProps> = ({ onTaskCreated }) => {
                         className: "hover:bg-zinc-200 flex items-center w-40",
                       })}
                     >
-                      <span>Baja</span>
+                      <span>Prioridad baja</span>
                       <div className="rounded-full bg-primary w-[13px] h-[13px]" />
                     </Button>
                   </div>
                 </PopoverContent>
               </Popover>
-              <Label htmlFor="date" className="text-right flex" />
+              <Label htmlFor="date" className="text-right flex mr-10" />
               <div>
                 <SelectDate onDateSelect={handleTaskDateChange}/>
               </div>
             </div>
             <div className="flex justify-center mt-4 mb-0">
-              <Button onClick={handleCreateTask} className="bg-primary text-white">
+              <Button onClick={handleCreateTask} className="bg-blue-500 text-white">
                 Crear 
               </Button>
             </div>
