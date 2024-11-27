@@ -40,7 +40,9 @@ export function SelectDate({ onDateSelect, initialDate }: SelectDateProps) {
           onClick={() => setIsOpen(!isOpen)}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP", { locale: es }) : <span>Fecha limite</span>}
+          <span className="max-w-[120px] md:max-w-full truncate">
+            {date ? format(date, "PPP", { locale: es }) : <span>Fecha limite</span>}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
